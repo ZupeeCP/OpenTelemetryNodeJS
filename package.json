@@ -1,0 +1,25 @@
+{
+  "name": "opentelemetrynodejs",
+  "version": "1.0.0",
+  "description": "Otel node js integration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@opentelemetry/api": "1.6.0",
+    "@opentelemetry/auto-instrumentations-node": "0.39.4",
+    "@opentelemetry/core": "1.18.1",
+    "@opentelemetry/exporter-metrics-otlp-proto": "0.45.1",
+    "@opentelemetry/exporter-trace-otlp-proto": "0.43.0",
+    "@opentelemetry/instrumentation-aws-sdk": "0.36.2",
+    "@opentelemetry/resources": "1.18.1",
+    "@opentelemetry/sdk-metrics": "1.21.0",
+    "@opentelemetry/sdk-node": "0.48.0",
+    "@opentelemetry/semantic-conventions": "1.18.1",
+    "moment": "2.29.1",
+    "prom-client": "15.1.0"
+  }
+}
