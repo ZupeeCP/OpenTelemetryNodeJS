@@ -1,13 +1,13 @@
 /* instrumentation.ts */
 import { NodeSDK } from '@opentelemetry/sdk-node'
-import { Resource } from '@opentelemetry/resources'
+import { Resource, processDetector } from '@opentelemetry/resources'
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto'
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
 import { AwsInstrumentation, AwsSdkRequestHookInformation } from '@opentelemetry/instrumentation-aws-sdk'
 import { TraceState } from '@opentelemetry/core'
 import { Span } from '@opentelemetry/api'
-import { RunTimeInstrumentation } from './runTimeMetric.class'
+import { RunTimeInstrumentation } from './opentelemetry/runTimeMetric.class'
 import {
 	MetricReader,
 	PeriodicExportingMetricReader,
@@ -15,6 +15,7 @@ import {
 	AggregationTemporality
 } from '@opentelemetry/sdk-metrics'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto'
+import { containerDetector } from '@opentelemetry/resource-detector-container'
 
 const awsInstrumentationConfig = {
 	preRequestHook: (span: Span, requestInfo: AwsSdkRequestHookInformation) => {
@@ -48,6 +49,7 @@ const sdk = new NodeSDK({
 		keepAlive: true,
 	}),
 	instrumentations: [getNodeAutoInstrumentations(), new AwsInstrumentation(awsInstrumentationConfig), new RunTimeInstrumentation()],
+	resourceDetectors: [processDetector, containerDetector]
 })
 
 sdk.start()
