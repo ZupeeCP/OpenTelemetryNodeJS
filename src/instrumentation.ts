@@ -1,6 +1,6 @@
 /* instrumentation.ts */
 import { NodeSDK } from '@opentelemetry/sdk-node'
-import { Resource, processDetector } from '@opentelemetry/resources'
+import { Resource, processDetector, envDetector } from '@opentelemetry/resources'
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto'
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
@@ -49,7 +49,7 @@ const sdk = new NodeSDK({
 		keepAlive: true,
 	}),
 	instrumentations: [getNodeAutoInstrumentations(), new AwsInstrumentation(awsInstrumentationConfig), new RunTimeInstrumentation()],
-	resourceDetectors: [processDetector, containerDetector]
+	resourceDetectors: [processDetector, envDetector, containerDetector]
 })
 
 sdk.start()
