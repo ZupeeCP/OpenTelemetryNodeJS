@@ -7,15 +7,16 @@ import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentation
 import { AwsInstrumentation, AwsSdkRequestHookInformation } from '@opentelemetry/instrumentation-aws-sdk'
 import { TraceState } from '@opentelemetry/core'
 import { Span } from '@opentelemetry/api'
-import { RunTimeInstrumentation } from './opentelemetry/runTimeMetric.class'
 import {
 	MetricReader,
 	PeriodicExportingMetricReader,
 	PushMetricExporter,
-	AggregationTemporality
+	AggregationTemporality,
 } from '@opentelemetry/sdk-metrics'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto'
 import { containerDetector } from '@opentelemetry/resource-detector-container'
+import { awsEc2Detector, awsEksDetector } from '@opentelemetry/resource-detector-aws'
+import { RunTimeInstrumentation } from './opentelemetry/runTimeMetric.class'
 
 const awsInstrumentationConfig = {
 	preRequestHook: (span: Span, requestInfo: AwsSdkRequestHookInformation) => {
@@ -29,7 +30,7 @@ const metricsExporter: PushMetricExporter = new OTLPMetricExporter({
 	url: process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT,
 	headers: { service: process.env.OTEL_SERVICE_NAME },
 	keepAlive: true,
-	temporalityPreference: AggregationTemporality.DELTA
+	temporalityPreference: AggregationTemporality.DELTA,
 })
 
 const metricReader: MetricReader = new PeriodicExportingMetricReader({
@@ -48,8 +49,12 @@ const sdk = new NodeSDK({
 		headers: {},
 		keepAlive: true,
 	}),
-	instrumentations: [getNodeAutoInstrumentations(), new AwsInstrumentation(awsInstrumentationConfig), new RunTimeInstrumentation()],
-	resourceDetectors: [processDetector, envDetector, containerDetector]
+	instrumentations: [
+		getNodeAutoInstrumentations(),
+		new AwsInstrumentation(awsInstrumentationConfig),
+		new RunTimeInstrumentation(),
+	],
+	resourceDetectors: [processDetector, envDetector, containerDetector, awsEc2Detector, awsEksDetector],
 })
 
 sdk.start()
